@@ -1,9 +1,10 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Baby, Heart, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-react";
-import LanguageSelector from "@/app/components/LanguageSelector";
 import { useTranslation, useLanguage } from "@/app/lib/LanguageContext";
 
 type ShoppingInputs = {
@@ -92,7 +93,6 @@ export default function OnboardingPage() {
           <Baby className="w-6 h-6" />
           {t("common.appName")}
         </div>
-        <LanguageSelector />
       </div>
 
       {/* Progress */}

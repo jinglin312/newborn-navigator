@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { Baby, Heart, ShoppingCart, Sparkles, CheckCircle, ArrowRight } from "lucide-react";
 import LanguageSelector from "./components/LanguageSelector";

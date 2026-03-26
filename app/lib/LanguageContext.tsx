@@ -70,7 +70,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 export function useLanguage() {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useLanguage must be used within a LanguageProvider");
+    // Return a fallback for server-side rendering
+    return {
+      language: "en" as Language,
+      setLanguage: () => {},
+      t: (key: string) => key,
+    };
   }
   return context;
 }
@@ -78,7 +83,8 @@ export function useLanguage() {
 export function useTranslation() {
   const context = useContext(LanguageContext);
   if (context === undefined) {
-    throw new Error("useTranslation must be used within a LanguageProvider");
+    // Return a fallback translation function for server-side rendering
+    return (key: string) => key;
   }
   return context.t;
 }
