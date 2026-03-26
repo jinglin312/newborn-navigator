@@ -56,6 +56,7 @@ function buildShoppingPrompt(shopping: Record<string, string>, language: string 
 - 育儿风格: ${shopping.parentingStyle?.replace(/_/g, " ")}
 - 时间约束: ${shopping.timeConstraint?.replace(/_/g, " ")}
 - 个人风格: ${shopping.personalStyle?.replace(/_/g, " ")}
+- 科技偏好: ${shopping.techPreference?.replace(/_/g, " ")}
 - 购买时机: ${shopping.babyAgeTarget?.replace(/_/g, " ")}
 
 生成一份个性化新生儿购物指南，具有以下确切部分：
@@ -81,6 +82,7 @@ Shopping profile:
 - Parenting style: ${shopping.parentingStyle?.replace(/_/g, " ")}
 - Time constraints: ${shopping.timeConstraint?.replace(/_/g, " ")}
 - Personal style: ${shopping.personalStyle?.replace(/_/g, " ")}
+- Tech preference: ${shopping.techPreference?.replace(/_/g, " ")}
 - Purchase timing: ${shopping.babyAgeTarget?.replace(/_/g, " ")}
 
 Generate a personalized newborn shopping guide with these EXACT sections:

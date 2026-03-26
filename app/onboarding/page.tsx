@@ -12,6 +12,7 @@ type ShoppingInputs = {
   parentingStyle: string;
   timeConstraint: string;
   personalStyle: string;
+  techPreference: string;
   babyAgeTarget: string;
 };
 
@@ -37,6 +38,7 @@ export default function OnboardingPage() {
     parentingStyle: "",
     timeConstraint: "",
     personalStyle: "",
+    techPreference: "",
     babyAgeTarget: "",
   });
   const [health, setHealth] = useState<HealthInputs>({
@@ -258,6 +260,23 @@ export default function OnboardingPage() {
                     <option value="trendy">{t("onboarding.shoppingPersonalTrend")}</option>
                     <option value="classic">{t("onboarding.shoppingPersonalClassic")}</option>
                     <option value="eco">{t("onboarding.shoppingPersonalEco")}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    {t("onboarding.shoppingTechLabel")}
+                  </label>
+                  <select
+                    value={shopping.techPreference}
+                    onChange={(e) => setShopping({ ...shopping, techPreference: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
+                  >
+                    <option value="">Select preference</option>
+                    <option value="love_tech">{t("onboarding.shoppingTechLover")}</option>
+                    <option value="some_tech">{t("onboarding.shoppingTechSome")}</option>
+                    <option value="minimal_tech">{t("onboarding.shoppingTechMinimal")}</option>
+                    <option value="unsure">{t("onboarding.shoppingTechUnsure")}</option>
                   </select>
                 </div>
 
