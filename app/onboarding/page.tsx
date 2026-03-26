@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Baby, Heart, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-react";
+import LanguageSelector from "@/app/components/LanguageSelector";
+import { useTranslation, useLanguage } from "@/app/lib/LanguageContext";
 
 type ShoppingInputs = {
   budget: string;
@@ -25,6 +27,8 @@ const STEPS = ["mode", "shopping", "health", "review"];
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const t = useTranslation();
+  const { language } = useLanguage();
   const [step, setStep] = useState(0);
   const [mode, setMode] = useState<"both" | "shopping" | "health">("both");
   const [shopping, setShopping] = useState<ShoppingInputs>({
@@ -57,6 +61,7 @@ export default function OnboardingPage() {
     setLoading(true);
     const payload = {
       mode,
+      language,
       shopping: mode !== "health" ? shopping : null,
       health: mode !== "shopping" ? health : null,
     };
@@ -66,7 +71,6 @@ export default function OnboardingPage() {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    // Store result and navigate
     sessionStorage.setItem("babywise_result", JSON.stringify(data));
     router.push("/results");
   }
@@ -81,9 +85,12 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-2 font-bold text-xl text-rose-600 px-6 py-4">
-        <Baby className="w-6 h-6" />
-        BabyWise
+      <div className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
+        <div className="flex items-center gap-2 font-bold text-xl text-rose-600">
+          <Baby className="w-6 h-6" />
+          {t("common.appName")}
+        </div>
+        <LanguageSelector />
       </div>
 
       {/* Progress */}
@@ -100,7 +107,9 @@ export default function OnboardingPage() {
             ))}
           </div>
           <p className="text-xs text-gray-400 mt-2">
-            Step {step + 1} of {activeSteps.length}
+            {t("onboarding.progressLabel", `Step ${step + 1} of ${activeSteps.length}`)
+              .replace("{{step}}", String(step + 1))
+              .replace("{{total}}", String(activeSteps.length))}
           </p>
         </div>
       </div>
@@ -112,31 +121,29 @@ export default function OnboardingPage() {
           {currentKey === "mode" && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                What do you need help with?
+                {t("onboarding.modeTitle")}
               </h2>
-              <p className="text-gray-500 mb-8">
-                Choose one or get both — a shopping guide and health tips.
-              </p>
+              <p className="text-gray-500 mb-8">{t("onboarding.modeDescription")}</p>
               <div className="space-y-4">
                 {[
                   {
                     key: "both",
                     icon: <Baby className="w-6 h-6 text-rose-500" />,
-                    label: "Both — Shopping & Health",
+                    label: t("onboarding.modeBoth"),
                     desc: "Complete newborn preparation guide",
                     color: "border-rose-400 bg-rose-50",
                   },
                   {
                     key: "shopping",
                     icon: <ShoppingCart className="w-6 h-6 text-orange-500" />,
-                    label: "Shopping Guide Only",
+                    label: t("onboarding.modeShopping"),
                     desc: "Personalized gear & product recommendations",
                     color: "border-orange-400 bg-orange-50",
                   },
                   {
                     key: "health",
                     icon: <Heart className="w-6 h-6 text-purple-500" />,
-                    label: "Health Tips Only",
+                    label: t("onboarding.modeHealth"),
                     desc: "Pregnancy & newborn care guidance",
                     color: "border-purple-400 bg-purple-50",
                   },
@@ -165,15 +172,13 @@ export default function OnboardingPage() {
           {currentKey === "shopping" && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Your Shopping Profile
+                {t("onboarding.shoppingTitle")}
               </h2>
-              <p className="text-gray-500 mb-8">
-                Help us understand your situation so we can cut the noise.
-              </p>
+              <p className="text-gray-500 mb-8">Help us understand your situation so we can cut the noise.</p>
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Total budget for newborn gear
+                    {t("onboarding.shoppingBudgetLabel")}
                   </label>
                   <select
                     value={shopping.budget}
@@ -181,17 +186,17 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select budget range</option>
-                    <option value="under_500">Under $500</option>
-                    <option value="500_1000">$500 – $1,000</option>
-                    <option value="1000_2000">$1,000 – $2,000</option>
-                    <option value="2000_3500">$2,000 – $3,500</option>
-                    <option value="over_3500">Over $3,500</option>
+                    <option value="under_500">{t("onboarding.shoppingBudgetUnder500")}</option>
+                    <option value="500_1000">{t("onboarding.shoppingBudget500_1000")}</option>
+                    <option value="1000_2000">{t("onboarding.shoppingBudget1000_2000")}</option>
+                    <option value="2000_3500">{t("onboarding.shoppingBudget2000_3500")}</option>
+                    <option value="over_3500">{t("onboarding.shoppingBudgetOver3500")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Living space
+                    {t("onboarding.shoppingSpaceLabel")}
                   </label>
                   <select
                     value={shopping.livingSpace}
@@ -199,16 +204,16 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select your space</option>
-                    <option value="studio">Studio / small apartment (&lt;600 sq ft)</option>
-                    <option value="apartment">Standard apartment (600–1,200 sq ft)</option>
-                    <option value="house_small">Small house (1,200–2,000 sq ft)</option>
-                    <option value="house_large">Large house (2,000+ sq ft)</option>
+                    <option value="studio">{t("onboarding.shoppingSpaceStudio")}</option>
+                    <option value="apartment">{t("onboarding.shoppingSpaceApartment")}</option>
+                    <option value="house_small">{t("onboarding.shoppingSpaceHouseSmall")}</option>
+                    <option value="house_large">{t("onboarding.shoppingSpaceHouseLarge")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Parenting style
+                    {t("onboarding.shoppingStyleLabel")}
                   </label>
                   <select
                     value={shopping.parentingStyle}
@@ -216,16 +221,16 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select style</option>
-                    <option value="attachment">Attachment / babywearing focused</option>
-                    <option value="independent">Independent sleep / schedule focused</option>
-                    <option value="balanced">Balanced / flexible</option>
-                    <option value="unsure">Not sure yet</option>
+                    <option value="minimalist">{t("onboarding.shoppingStyleMinimalist")}</option>
+                    <option value="practical">{t("onboarding.shoppingStylePractical")}</option>
+                    <option value="gadget_lover">{t("onboarding.shoppingStyleGadgetLover")}</option>
+                    <option value="balanced">{t("onboarding.shoppingStyleBalance")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Your time constraints
+                    {t("onboarding.shoppingTimeLabel")}
                   </label>
                   <select
                     value={shopping.timeConstraint}
@@ -233,16 +238,15 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select situation</option>
-                    <option value="sahp">Stay-at-home parent</option>
-                    <option value="part_time">Part-time work / flexible hours</option>
-                    <option value="full_time">Both parents working full-time</option>
-                    <option value="single">Single parent</option>
+                    <option value="hurried">{t("onboarding.shoppingTimeHurried")}</option>
+                    <option value="moderate">{t("onboarding.shoppingTimeModerate")}</option>
+                    <option value="plenty">{t("onboarding.shoppingTimePlenty")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Personal style / aesthetic
+                    {t("onboarding.shoppingPersonalLabel")}
                   </label>
                   <select
                     value={shopping.personalStyle}
@@ -250,17 +254,16 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select preference</option>
-                    <option value="minimal">Minimal / Scandinavian</option>
-                    <option value="colorful">Fun & colorful</option>
-                    <option value="practical">Purely practical — looks don&apos;t matter</option>
-                    <option value="premium">Premium / high-end brands</option>
-                    <option value="eco">Eco-friendly / sustainable</option>
+                    <option value="budget">{t("onboarding.shoppingPersonalBudget")}</option>
+                    <option value="trendy">{t("onboarding.shoppingPersonalTrend")}</option>
+                    <option value="classic">{t("onboarding.shoppingPersonalClassic")}</option>
+                    <option value="eco">{t("onboarding.shoppingPersonalEco")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Baby&apos;s expected age at purchase (how far along are you?)
+                    {t("onboarding.shoppingBabyAgeLabel")}
                   </label>
                   <select
                     value={shopping.babyAgeTarget}
@@ -268,10 +271,10 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
                   >
                     <option value="">Select stage</option>
-                    <option value="1st_trimester">1st trimester — plenty of time</option>
-                    <option value="2nd_trimester">2nd trimester — planning ahead</option>
-                    <option value="3rd_trimester">3rd trimester — buying now</option>
-                    <option value="already_born">Baby is already here</option>
+                    <option value="now">{t("onboarding.shoppingBabyAgeNow")}</option>
+                    <option value="1_3months">{t("onboarding.shoppingBabyAge1_3months")}</option>
+                    <option value="3_6months">{t("onboarding.shoppingBabyAge3_6months")}</option>
+                    <option value="6plus">{t("onboarding.shoppingBabyAge6plus")}</option>
                   </select>
                 </div>
               </div>
@@ -282,7 +285,7 @@ export default function OnboardingPage() {
           {currentKey === "health" && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Your Health Profile
+                {t("onboarding.healthTitle")}
               </h2>
               <p className="text-gray-500 mb-2">
                 The more you share, the more relevant your tips will be.
@@ -293,7 +296,7 @@ export default function OnboardingPage() {
               <div className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Pregnancy stage
+                    {t("onboarding.healthStageLabel")}
                   </label>
                   <select
                     value={health.pregnancyStage}
@@ -301,18 +304,18 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
                   >
                     <option value="">Select stage</option>
-                    <option value="trying">Trying to conceive</option>
-                    <option value="t1">1st trimester (weeks 1–12)</option>
-                    <option value="t2">2nd trimester (weeks 13–27)</option>
-                    <option value="t3">3rd trimester (weeks 28–40)</option>
-                    <option value="postpartum_early">Postpartum (0–6 weeks)</option>
-                    <option value="postpartum_late">Postpartum (6 weeks – 1 year)</option>
+                    <option value="trying">{t("onboarding.healthStageTrying")}</option>
+                    <option value="t1">{t("onboarding.healthStageT1")}</option>
+                    <option value="t2">{t("onboarding.healthStageT2")}</option>
+                    <option value="t3">{t("onboarding.healthStageT3")}</option>
+                    <option value="postpartum_early">{t("onboarding.healthStagePostpartumEarly")}</option>
+                    <option value="postpartum_late">{t("onboarding.healthStagePostpartumLate")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Your age
+                    {t("onboarding.healthAgeLabel")}
                   </label>
                   <select
                     value={health.age}
@@ -320,22 +323,22 @@ export default function OnboardingPage() {
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
                   >
                     <option value="">Select range</option>
-                    <option value="under_25">Under 25</option>
-                    <option value="25_30">25–30</option>
-                    <option value="31_35">31–35</option>
-                    <option value="36_40">36–40</option>
-                    <option value="over_40">Over 40</option>
+                    <option value="under_20">{t("onboarding.healthAgeUnder20")}</option>
+                    <option value="20_25">{t("onboarding.healthAge20_25")}</option>
+                    <option value="25_30">{t("onboarding.healthAge25_30")}</option>
+                    <option value="30_35">{t("onboarding.healthAge30_35")}</option>
+                    <option value="35plus">{t("onboarding.healthAge35plus")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Any health conditions? (select all that apply)
+                    {t("onboarding.healthConditionsLabel")}
                   </label>
                   <textarea
                     value={health.healthConditions}
                     onChange={(e) => setHealth({ ...health, healthConditions: e.target.value })}
-                    placeholder="e.g. gestational diabetes, hypertension, thyroid issues, anemia, none"
+                    placeholder={t("onboarding.healthConditionsPlaceholder")}
                     rows={3}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"
                   />
@@ -343,12 +346,12 @@ export default function OnboardingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Current symptoms or concerns
+                    {t("onboarding.healthSymptomsLabel")}
                   </label>
                   <textarea
                     value={health.symptoms}
                     onChange={(e) => setHealth({ ...health, symptoms: e.target.value })}
-                    placeholder="e.g. nausea, fatigue, back pain, swelling, trouble sleeping, none"
+                    placeholder={t("onboarding.healthSymptomsPlaceholder")}
                     rows={3}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"
                   />
@@ -356,12 +359,12 @@ export default function OnboardingPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Relevant medical history
+                    {t("onboarding.healthHistoryLabel")}
                   </label>
                   <textarea
                     value={health.medicalHistory}
                     onChange={(e) => setHealth({ ...health, medicalHistory: e.target.value })}
-                    placeholder="e.g. previous miscarriage, C-section history, fertility treatments, none"
+                    placeholder={t("onboarding.healthHistoryPlaceholder")}
                     rows={3}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"
                   />
@@ -374,16 +377,14 @@ export default function OnboardingPage() {
           {currentKey === "review" && (
             <div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Ready to generate your guide?
+                {t("onboarding.reviewTitle")}
               </h2>
-              <p className="text-gray-500 mb-8">
-                We&apos;ll analyze your inputs and create a personalized guide in seconds.
-              </p>
+              <p className="text-gray-500 mb-8">{t("onboarding.reviewDescription")}</p>
               <div className="space-y-3 mb-8">
                 {mode !== "health" && (
                   <div className="bg-rose-50 rounded-2xl p-4">
                     <p className="text-sm font-semibold text-rose-700 mb-2 flex items-center gap-2">
-                      <ShoppingCart className="w-4 h-4" /> Shopping Profile
+                      <ShoppingCart className="w-4 h-4" /> {t("onboarding.reviewBudget")}
                     </p>
                     <ul className="text-sm text-gray-600 space-y-1">
                       {shopping.budget && <li>Budget: {shopping.budget.replace(/_/g, " ")}</li>}
@@ -395,7 +396,7 @@ export default function OnboardingPage() {
                 {mode !== "shopping" && (
                   <div className="bg-purple-50 rounded-2xl p-4">
                     <p className="text-sm font-semibold text-purple-700 mb-2 flex items-center gap-2">
-                      <Heart className="w-4 h-4" /> Health Profile
+                      <Heart className="w-4 h-4" /> {t("onboarding.reviewPregnancyStage")}
                     </p>
                     <ul className="text-sm text-gray-600 space-y-1">
                       {health.pregnancyStage && <li>Stage: {health.pregnancyStage.replace(/_/g, " ")}</li>}
@@ -418,7 +419,7 @@ export default function OnboardingPage() {
                 onClick={back}
                 className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                <ArrowLeft className="w-4 h-4" /> {t("onboarding.backButton")}
               </button>
             ) : (
               <div />
@@ -429,7 +430,7 @@ export default function OnboardingPage() {
                 onClick={next}
                 className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold px-6 py-3 rounded-full text-sm transition-colors"
               >
-                Continue <ArrowRight className="w-4 h-4" />
+                {t("onboarding.nextButton")} <ArrowRight className="w-4 h-4" />
               </button>
             ) : (
               <button
@@ -437,7 +438,7 @@ export default function OnboardingPage() {
                 disabled={loading}
                 className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 disabled:bg-rose-300 text-white font-semibold px-6 py-3 rounded-full text-sm transition-colors"
               >
-                {loading ? "Generating…" : "Generate My Guide"}
+                {loading ? t("onboarding.generating") : t("onboarding.reviewButton")}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
             )}

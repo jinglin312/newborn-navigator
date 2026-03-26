@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Baby, ShoppingCart, Heart, RefreshCw, ArrowLeft } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import LanguageSelector from "@/app/components/LanguageSelector";
+import { useTranslation } from "@/app/lib/LanguageContext";
 
 type ResultData = {
   mode: string;
@@ -13,6 +15,7 @@ type ResultData = {
 };
 
 export default function ResultsPage() {
+  const t = useTranslation();
   const [data, setData] = useState<ResultData | null>(null);
   const [activeTab, setActiveTab] = useState<"shopping" | "health">("shopping");
 
@@ -29,9 +32,9 @@ export default function ResultsPage() {
     return (
       <div className="min-h-screen bg-rose-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-500 mb-4">No results found.</p>
+          <p className="text-gray-500 mb-4">{t("results.noResults")}</p>
           <Link href="/onboarding" className="text-rose-500 hover:underline">
-            Start over
+            {t("results.tryAgain")}
           </Link>
         </div>
       </div>
@@ -44,7 +47,7 @@ export default function ResultsPage() {
         <div className="text-center">
           <p className="text-red-500 mb-4">{data.error}</p>
           <Link href="/onboarding" className="text-rose-500 hover:underline">
-            Try again
+            {t("results.tryAgain")}
           </Link>
         </div>
       </div>
@@ -56,23 +59,24 @@ export default function ResultsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
       {/* Header */}
-      <div className="px-6 py-4 max-w-4xl mx-auto flex items-center justify-between">
+      <div className="px-6 py-4 max-w-4xl mx-auto flex items-center justify-between w-full">
         <div className="flex items-center gap-2 font-bold text-xl text-rose-600">
           <Baby className="w-6 h-6" />
-          BabyWise
+          {t("common.appName")}
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <LanguageSelector />
           <Link
             href="/onboarding"
             className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
           >
-            <RefreshCw className="w-4 h-4" /> Start Over
+            <RefreshCw className="w-4 h-4" /> {t("results.startOver")}
           </Link>
           <Link
             href="/"
             className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
           >
-            <ArrowLeft className="w-4 h-4" /> Home
+            <ArrowLeft className="w-4 h-4" /> {t("results.home")}
           </Link>
         </div>
       </div>
@@ -81,10 +85,10 @@ export default function ResultsPage() {
         {/* Title */}
         <div className="text-center py-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Your Personalized Guide is Ready ✨
+            {t("results.title")}
           </h1>
           <p className="text-gray-500">
-            Generated based on your specific situation. Scroll through your results below.
+            {t("results.subtitle")}
           </p>
         </div>
 
@@ -99,7 +103,7 @@ export default function ResultsPage() {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <ShoppingCart className="w-4 h-4" /> Shopping
+              <ShoppingCart className="w-4 h-4" /> {t("results.tabShopping")}
             </button>
             <button
               onClick={() => setActiveTab("health")}
@@ -109,7 +113,7 @@ export default function ResultsPage() {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <Heart className="w-4 h-4" /> Health
+              <Heart className="w-4 h-4" /> {t("results.tabHealth")}
             </button>
           </div>
         )}
@@ -134,9 +138,7 @@ export default function ResultsPage() {
         {/* Disclaimer */}
         <div className="mt-8 text-center">
           <p className="text-xs text-gray-400 max-w-2xl mx-auto">
-            ⚕️ Health information provided by BabyWise is for educational purposes only and is
-            not a substitute for professional medical advice, diagnosis, or treatment. Always
-            consult your healthcare provider with any questions about your health or pregnancy.
+            {t("results.disclaimer")}
           </p>
         </div>
 
@@ -146,7 +148,7 @@ export default function ResultsPage() {
             href="/onboarding"
             className="inline-flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white font-semibold px-6 py-3 rounded-full text-sm transition-colors"
           >
-            <RefreshCw className="w-4 h-4" /> Update My Profile & Regenerate
+            <RefreshCw className="w-4 h-4" /> {t("results.updateProfile")}
           </Link>
         </div>
       </div>
