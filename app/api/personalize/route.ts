@@ -71,7 +71,16 @@ function buildShoppingPrompt(shopping: Record<string, string>, language: string 
 3-5 个具体的替代方案或策略来拉伸他们的预算（例如，"租一个 Snoo 而不是购买"）。
 
 ## ${t.timing}
-根据他们的阶段，何时购买每个类别（现在购买什么 vs. 等待）。
+根据他们的阶段，何时购买每个类别的具体时间表（现在购买什么、等待什么、提前准备什么）。
+
+## ✅ 接下来
+购买完基本产品和时间指南后，他们应该关注或购买什么。
+
+## ⏸️ 等等
+应该推迟购买的物品，或真正可选的物品。
+
+## 💡 你的购物理念
+根据他们的输入（预算、风格、空间、工作情况），总结适合他们具体情况的购物理念——他们应该如何思考购买婴儿用品。
 
 对他们的输入要具体。住在工作室公寓的家庭应该得到与住在大房子里的家庭完全不同的建议。预算为 $500 的家庭不应该被告知购买 $400 的摇篮。
 `
@@ -97,7 +106,16 @@ List 6–8 items that are commonly marketed but NOT worth buying given their bud
 3–5 specific swaps or strategies to stretch their budget (e.g., "Rent a Snoo instead of buying").
 
 ## ${t.timing}
-When to buy each category given their stage (what to get now vs. wait on).
+Specific timeline for when to buy each category (what to get now vs. wait on, what to prepare early).
+
+## ✅ Next
+What they should focus on or buy next after the essentials and timing guide.
+
+## ⏸️ Wait
+What to hold off on buying until later, or items that are truly optional.
+
+## 💡 Your Shopping Philosophy
+Based on their inputs (budget, style, space, work situation), summarize the guiding philosophy for their specific situation—how they should think about shopping for baby gear.
 
 Be specific to their inputs. A family in a studio apartment should get very different advice than one in a large house. A $500 budget family should not be told to buy a $400 bassinet.
 `;
