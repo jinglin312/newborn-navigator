@@ -25,6 +25,13 @@ export default function ResultsPage() {
     const stored = sessionStorage.getItem("babywise_result");
     if (stored) {
       const parsed = JSON.parse(stored);
+      console.log("Result data:", {
+        mode: parsed.mode,
+        shoppingLength: parsed.shoppingResult?.length,
+        healthLength: parsed.healthResult?.length,
+        hasShopping: !!parsed.shoppingResult,
+        hasHealth: !!parsed.healthResult,
+      });
       setData(parsed);
       if (parsed.mode === "health") setActiveTab("health");
     }

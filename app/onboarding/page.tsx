@@ -75,6 +75,13 @@ export default function OnboardingPage() {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
+    console.log("API Response:", {
+      status: res.status,
+      mode: data.mode,
+      shoppingLength: data.shoppingResult?.length,
+      healthLength: data.healthResult?.length,
+      hasError: !!data.error,
+    });
     sessionStorage.setItem("babywise_result", JSON.stringify(data));
     router.push("/results");
   }
