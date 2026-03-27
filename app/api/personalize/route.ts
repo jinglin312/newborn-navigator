@@ -54,7 +54,7 @@ function buildShoppingPrompt(shopping: Record<string, string>, language: string 
 - 预算: ${budgetMap[shopping.budget] || shopping.budget}
 - 生活空间: ${spaceMap[shopping.livingSpace] || shopping.livingSpace}
 - 育儿风格: ${shopping.parentingStyle?.replace(/_/g, " ")}
-- 时间约束: ${shopping.timeConstraint?.replace(/_/g, " ")}
+- 工作情况: ${shopping.workSituation?.replace(/_/g, " ")}
 - 个人风格: ${shopping.personalStyle?.replace(/_/g, " ")}
 - 科技偏好: ${shopping.techPreference?.replace(/_/g, " ")}
 - 购买时机: ${shopping.babyAgeTarget?.replace(/_/g, " ")}
@@ -80,7 +80,7 @@ Shopping profile:
 - Budget: ${budgetMap[shopping.budget] || shopping.budget}
 - Living space: ${spaceMap[shopping.livingSpace] || shopping.livingSpace}
 - Parenting style: ${shopping.parentingStyle?.replace(/_/g, " ")}
-- Time constraints: ${shopping.timeConstraint?.replace(/_/g, " ")}
+- Work situation: ${shopping.workSituation?.replace(/_/g, " ")}
 - Personal style: ${shopping.personalStyle?.replace(/_/g, " ")}
 - Tech preference: ${shopping.techPreference?.replace(/_/g, " ")}
 - Purchase timing: ${shopping.babyAgeTarget?.replace(/_/g, " ")}

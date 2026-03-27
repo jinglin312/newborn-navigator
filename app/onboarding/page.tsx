@@ -11,7 +11,7 @@ type ShoppingInputs = {
   budget: string;
   livingSpace: string;
   parentingStyle: string;
-  timeConstraint: string;
+  workSituation: string;
   personalStyle: string;
   techPreference: string;
   babyAgeTarget: string;
@@ -37,7 +37,7 @@ export default function OnboardingPage() {
     budget: "",
     livingSpace: "",
     parentingStyle: "",
-    timeConstraint: "",
+    workSituation: "",
     personalStyle: "",
     techPreference: "",
     babyAgeTarget: "",
@@ -214,53 +214,85 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     {t("onboarding.shoppingStyleLabel")}
                   </label>
-                  <select
-                    value={shopping.parentingStyle}
-                    onChange={(e) => setShopping({ ...shopping, parentingStyle: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
-                  >
-                    <option value="">Select style</option>
-                    <option value="minimalist">{t("onboarding.shoppingStyleMinimalist")}</option>
-                    <option value="practical">{t("onboarding.shoppingStylePractical")}</option>
-                    <option value="gadget_lover">{t("onboarding.shoppingStyleGadgetLover")}</option>
-                    <option value="balanced">{t("onboarding.shoppingStyleBalance")}</option>
-                  </select>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "minimalist", label: t("onboarding.shoppingStyleMinimalist"), emoji: "🧘" },
+                      { value: "practical", label: t("onboarding.shoppingStylePractical"), emoji: "🔧" },
+                      { value: "gadget_lover", label: t("onboarding.shoppingStyleGadgetLover"), emoji: "⚡" },
+                      { value: "balanced", label: t("onboarding.shoppingStyleBalance"), emoji: "⚖️" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setShopping({ ...shopping, parentingStyle: option.value })}
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          shopping.parentingStyle === option.value
+                            ? "border-rose-400 bg-rose-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-rose-200"
+                        }`}
+                      >
+                        <div className="text-lg mb-1">{option.emoji}</div>
+                        <div className="text-sm">{option.label}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    {t("onboarding.shoppingTimeLabel")}
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t("onboarding.shoppingWorkLabel")}
                   </label>
-                  <select
-                    value={shopping.timeConstraint}
-                    onChange={(e) => setShopping({ ...shopping, timeConstraint: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
-                  >
-                    <option value="">Select situation</option>
-                    <option value="hurried">{t("onboarding.shoppingTimeHurried")}</option>
-                    <option value="moderate">{t("onboarding.shoppingTimeModerate")}</option>
-                    <option value="plenty">{t("onboarding.shoppingTimePlenty")}</option>
-                  </select>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      { value: "stay_at_home", label: t("onboarding.shoppingWorkStayHome"), emoji: "🏡" },
+                      { value: "work_part_time", label: t("onboarding.shoppingWorkPartTime"), emoji: "⏰" },
+                      { value: "work_full_time", label: t("onboarding.shoppingWorkFullTime"), emoji: "💼" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setShopping({ ...shopping, workSituation: option.value })}
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          shopping.workSituation === option.value
+                            ? "border-rose-400 bg-rose-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-rose-200"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{option.emoji}</span>
+                          <span className="text-sm">{option.label}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
                     {t("onboarding.shoppingPersonalLabel")}
                   </label>
-                  <select
-                    value={shopping.personalStyle}
-                    onChange={(e) => setShopping({ ...shopping, personalStyle: e.target.value })}
-                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
-                  >
-                    <option value="">Select preference</option>
-                    <option value="budget">{t("onboarding.shoppingPersonalBudget")}</option>
-                    <option value="trendy">{t("onboarding.shoppingPersonalTrend")}</option>
-                    <option value="classic">{t("onboarding.shoppingPersonalClassic")}</option>
-                    <option value="eco">{t("onboarding.shoppingPersonalEco")}</option>
-                  </select>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: "budget", label: t("onboarding.shoppingPersonalBudget"), emoji: "💰" },
+                      { value: "trendy", label: t("onboarding.shoppingPersonalTrend"), emoji: "✨" },
+                      { value: "classic", label: t("onboarding.shoppingPersonalClassic"), emoji: "🎩" },
+                      { value: "eco", label: t("onboarding.shoppingPersonalEco"), emoji: "🌿" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setShopping({ ...shopping, personalStyle: option.value })}
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          shopping.personalStyle === option.value
+                            ? "border-rose-400 bg-rose-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-rose-200"
+                        }`}
+                      >
+                        <div className="text-lg mb-1">{option.emoji}</div>
+                        <div className="text-sm">{option.label}</div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div>
