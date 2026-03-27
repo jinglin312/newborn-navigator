@@ -223,7 +223,7 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
     if (mode === "both") {
       userPrompt =
         buildShoppingPrompt(shopping, language) +
-        "\n---\n" +
+        "\n\n---\n\nIMMEDIATELY AFTER FINISHING THE SHOPPING GUIDE ABOVE, OUTPUT THE EXACT TEXT: ---BABYWISE_HEALTH_SECTION_STARTS_HERE---\n\nTHEN output the health guide below:\n\n" +
         buildHealthPrompt(health, language);
     } else if (mode === "shopping") {
       userPrompt = buildShoppingPrompt(shopping, language);
@@ -254,7 +254,7 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
     let healthResult = "";
 
     if (mode === "both") {
-      const parts = text.split("---");
+      const parts = text.split("---BABYWISE_HEALTH_SECTION_STARTS_HERE---");
       shoppingResult = parts[0]?.trim() || text;
       healthResult = parts[1]?.trim() || "";
     } else if (mode === "shopping") {
