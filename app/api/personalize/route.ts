@@ -241,6 +241,14 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
     const content = message.content[0];
     const text = content.type === "text" ? content.text : "";
 
+    console.log("Claude API Response:", {
+      model: message.model,
+      usage: message.usage,
+      contentType: content.type,
+      textLength: text.length,
+      textPreview: text.substring(0, 200),
+    });
+
     // Split shopping and health sections if both
     let shoppingResult = "";
     let healthResult = "";
@@ -260,11 +268,19 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
       shoppingResult,
       healthResult,
       inputs: { shopping, health },
+      debug: {
+        shoppingLength: shoppingResult.length,
+        healthLength: healthResult.length,
+      },
     });
   } catch (error) {
     console.error("Personalize API error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to generate guide. Please try again." },
+      {
+        error: "Failed to generate guide. Please try again.",
+        debug: { errorMessage },
+      },
       { status: 500 }
     );
   }
