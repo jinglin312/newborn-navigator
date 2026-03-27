@@ -83,6 +83,8 @@ function buildShoppingPrompt(shopping: Record<string, string>, language: string 
 根据他们的输入（预算、风格、空间、工作情况），总结适合他们具体情况的购物理念——他们应该如何思考购买婴儿用品。
 
 对他们的输入要具体。住在工作室公寓的家庭应该得到与住在大房子里的家庭完全不同的建议。预算为 $500 的家庭不应该被告知购买 $400 的摇篮。
+
+重要提示：包括上面的全部 7 个部分。不要截断或跳过任何部分。每个部分对用户都很重要。
 `
       : `
 Shopping profile:
@@ -118,6 +120,8 @@ What to hold off on buying until later, or items that are truly optional.
 Based on their inputs (budget, style, space, work situation), summarize the guiding philosophy for their specific situation—how they should think about shopping for baby gear.
 
 Be specific to their inputs. A family in a studio apartment should get very different advice than one in a large house. A $500 budget family should not be told to buy a $400 bassinet.
+
+IMPORTANT: Include all 7 sections above in full. Do NOT truncate or skip any section. Each section is important for the user.
 `;
 
   return prompt;
@@ -229,7 +233,7 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5",
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
