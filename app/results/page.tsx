@@ -62,10 +62,10 @@ export default function ResultsPage() {
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
       {/* Header */}
       <div className="px-6 py-4 max-w-4xl mx-auto flex items-center justify-between w-full">
-        <div className="flex items-center gap-2 font-bold text-xl text-rose-600">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-rose-600 hover:text-rose-700 transition-colors">
           <Baby className="w-6 h-6" />
           {t("common.appName")}
-        </div>
+        </Link>
         <div className="flex gap-3 items-center">
           <LanguageSelector />
           <Link

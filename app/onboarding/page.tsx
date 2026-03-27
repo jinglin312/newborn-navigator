@@ -3,6 +3,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Baby, Heart, ShoppingCart, ArrowRight, ArrowLeft } from "lucide-react";
 import { useTranslation, useLanguage } from "@/app/lib/LanguageContext";
@@ -89,10 +90,10 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
-        <div className="flex items-center gap-2 font-bold text-xl text-rose-600">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-rose-600 hover:text-rose-700 transition-colors">
           <Baby className="w-6 h-6" />
           {t("common.appName")}
-        </div>
+        </Link>
       </div>
 
       {/* Progress */}

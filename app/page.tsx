@@ -14,10 +14,10 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
       {/* Nav */}
       <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2 font-bold text-xl text-rose-600">
+        <Link href="/" className="flex items-center gap-2 font-bold text-xl text-rose-600 hover:text-rose-700 transition-colors">
           <Baby className="w-6 h-6" />
           <span>{t("common.appName")}</span>
-        </div>
+        </Link>
         <div className="flex items-center gap-4">
           <LanguageSelector />
           <Link
