@@ -172,7 +172,9 @@ function buildStrollerPrompt(stroller: Record<string, string>, language: string 
 ## 🛒 购买建议
 何时购买、在哪里购买、是否值得购买二手品、保修问题。
 
-确保建议具体针对他们的输入。生活在公共交通城市的人与住在大SUV郊区的人需要截然不同的建议。有腰背部问题的人需要特定的人体工学建议。
+关键：针对他们的具体情况提供极其具体的建议。生活在公共交通城市的人与住在大SUV郊区的人需要截然不同的建议。有腰背部问题的人需要特定的人体工学建议。
+
+生成一份全面详细的指南，每个部分都有详细的解释。每项建议都应该针对他们的特定情况进行论证。
 `
       : `
 Stroller Requirements Profile:
@@ -201,7 +203,9 @@ Useful accessories relevant to their lifestyle (rain canopy, cup holders, footmu
 ## 🛒 How to Buy Smart
 When to buy, where to buy, whether buying second-hand makes sense, warranty considerations, seasonal sales timing.
 
-Be specific to their inputs. Someone using public transit in a city needs completely different advice than someone with a large SUV in the suburbs. Someone with back issues needs specific ergonomic recommendations.
+CRITICAL: Be EXTREMELY SPECIFIC to their inputs. Someone using public transit in a city needs completely different advice than someone with a large SUV in the suburbs. Someone with back issues needs specific ergonomic recommendations.
+
+Generate a COMPREHENSIVE guide with detailed explanations for each section. Each recommendation should be justified for their specific situation.
 `;
 
   return prompt;
@@ -318,7 +322,7 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
 
     const message = await client.messages.create({
       model: "claude-haiku-4-5",
-      max_tokens: 4096,
+      max_tokens: stroller ? 6000 : 4096,
       system: systemPrompt,
       messages: [{ role: "user", content: userPrompt }],
     });
