@@ -127,6 +127,86 @@ IMPORTANT: Include all 7 sections above in full. Do NOT truncate or skip any sec
   return prompt;
 }
 
+function buildStrollerPrompt(stroller: Record<string, string>, language: string = "en"): string {
+  const livingMap: Record<string, string> = {
+    urban_transit: language === "zh" ? "有公共交通的城市" : "urban with public transit",
+    urban_car: language === "zh" ? "有车和公共交通的城市" : "urban with car & public transit",
+    suburban: language === "zh" ? "郊区" : "suburban",
+    rural: language === "zh" ? "农村" : "rural",
+  };
+
+  const storageMap: Record<string, string> = {
+    no_car: language === "zh" ? "没有车" : "no car",
+    small_trunk: language === "zh" ? "小车后备箱" : "small car trunk",
+    large_suv: language === "zh" ? "大SUV" : "large SUV",
+  };
+
+  const t = translations[language as keyof typeof translations] || translations.en;
+
+  const prompt =
+    language === "zh"
+      ? `
+婴儿车需求资料:
+- 居住环境: ${livingMap[stroller.livingSituation] || stroller.livingSituation}
+- 存储空间: ${storageMap[stroller.storageConstraints] || stroller.storageConstraints}
+- 身体方面的考虑: ${stroller.physicalConsiderations?.replace(/_/g, " ")}
+- 主要用途: ${stroller.primaryUse?.replace(/_/g, " ")}
+
+根据他们的具体需求生成个性化婴儿车指南，包含以下确切部分：
+
+## 🚼 为你推荐的婴儿车类型
+基于他们的生活方式和环境，解释为什么某些婴儿车类型最适合他们。
+
+## ✅ 必备功能
+他们应该寻找的具体功能（可折叠性、重量、轮子类型、手柄高度等）。
+
+## 🏪 具体产品推荐
+根据他们的预算和需求推荐3-5款具体的婴儿车型号（带估计价格）。
+
+## ⚠️ 要避免的常见错误
+对于他们的具体情况，哪些婴儿车功能或类型可能不合适。
+
+## 💡 配件和额外功能
+与他们的生活方式相关的有用配件（雨篷、杯架、脚踏等）。
+
+## 🛒 购买建议
+何时购买、在哪里购买、是否值得购买二手品、保修问题。
+
+确保建议具体针对他们的输入。生活在公共交通城市的人与住在大SUV郊区的人需要截然不同的建议。有腰背部问题的人需要特定的人体工学建议。
+`
+      : `
+Stroller Requirements Profile:
+- Living Environment: ${livingMap[stroller.livingSituation] || stroller.livingSituation}
+- Storage Constraints: ${storageMap[stroller.storageConstraints] || stroller.storageConstraints}
+- Physical Considerations: ${stroller.physicalConsiderations?.replace(/_/g, " ")}
+- Primary Use: ${stroller.primaryUse?.replace(/_/g, " ")}
+
+Generate a personalized stroller guide based on their specific needs with these EXACT sections:
+
+## 🚼 Recommended Stroller Type for You
+Based on their lifestyle and environment, explain which stroller types will work best for them and why.
+
+## ✅ Must-Have Features
+Specific features to look for (foldability, weight, wheel type, handle height, etc.) relevant to their situation.
+
+## 🏪 Specific Product Recommendations
+Recommend 3–5 specific stroller models (with estimated prices) based on their budget and needs. Include one budget option and one premium option.
+
+## ⚠️ Common Mistakes to Avoid
+Which stroller features or types might NOT work for their specific situation.
+
+## 💡 Accessories & Add-ons
+Useful accessories relevant to their lifestyle (rain canopy, cup holders, footmuff, etc.) and whether they're worth buying.
+
+## 🛒 How to Buy Smart
+When to buy, where to buy, whether buying second-hand makes sense, warranty considerations, seasonal sales timing.
+
+Be specific to their inputs. Someone using public transit in a city needs completely different advice than someone with a large SUV in the suburbs. Someone with back issues needs specific ergonomic recommendations.
+`;
+
+  return prompt;
+}
+
 function buildHealthPrompt(health: Record<string, string>, language: string = "en"): string {
   const stageMap: Record<string, string> = {
     trying: language === "zh" ? "尝试怀孕" : "trying to conceive",
@@ -208,7 +288,7 @@ Always include a disclaimer that this is informational and not a substitute for 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { mode, language = "en", shopping, health } = body;
+    const { mode, language = "en", shopping, health, stroller } = body;
 
     const systemPrompt =
       language === "zh"
@@ -227,6 +307,11 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
         buildHealthPrompt(health, language);
     } else if (mode === "shopping") {
       userPrompt = buildShoppingPrompt(shopping, language);
+      if (stroller) {
+        userPrompt +=
+          "\n\n---\n\nIMMEDIATELY AFTER FINISHING THE SHOPPING GUIDE ABOVE, OUTPUT THE EXACT TEXT: ---BABYWISE_STROLLER_SECTION_STARTS_HERE---\n\nTHEN output the stroller guide below:\n\n" +
+          buildStrollerPrompt(stroller, language);
+      }
     } else {
       userPrompt = buildHealthPrompt(health, language);
     }
@@ -249,16 +334,23 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
       textPreview: text.substring(0, 200),
     });
 
-    // Split shopping and health sections if both
+    // Split shopping, health, and stroller sections
     let shoppingResult = "";
     let healthResult = "";
+    let strollerResult = "";
 
     if (mode === "both") {
       const parts = text.split("---BABYWISE_HEALTH_SECTION_STARTS_HERE---");
       shoppingResult = parts[0]?.trim() || text;
       healthResult = parts[1]?.trim() || "";
     } else if (mode === "shopping") {
-      shoppingResult = text;
+      if (stroller) {
+        const parts = text.split("---BABYWISE_STROLLER_SECTION_STARTS_HERE---");
+        shoppingResult = parts[0]?.trim() || text;
+        strollerResult = parts[1]?.trim() || "";
+      } else {
+        shoppingResult = text;
+      }
     } else {
       healthResult = text;
     }
@@ -267,10 +359,12 @@ Format your response in clean Markdown. Use emoji section headers. Be warm but d
       mode,
       shoppingResult,
       healthResult,
-      inputs: { shopping, health },
+      strollerResult,
+      inputs: { shopping, health, stroller },
       debug: {
         shoppingLength: shoppingResult.length,
         healthLength: healthResult.length,
+        strollerLength: strollerResult.length,
       },
     });
   } catch (error) {

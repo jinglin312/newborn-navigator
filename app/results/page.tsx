@@ -13,13 +13,14 @@ type ResultData = {
   mode: string;
   shoppingResult: string;
   healthResult: string;
+  strollerResult: string;
   error?: string;
 };
 
 export default function ResultsPage() {
   const t = useTranslation();
   const [data, setData] = useState<ResultData | null>(null);
-  const [activeTab, setActiveTab] = useState<"shopping" | "health">("shopping");
+  const [activeTab, setActiveTab] = useState<"shopping" | "health" | "stroller">("shopping");
 
   useEffect(() => {
     const stored = sessionStorage.getItem("babywise_result");
@@ -29,8 +30,10 @@ export default function ResultsPage() {
         mode: parsed.mode,
         shoppingLength: parsed.shoppingResult?.length,
         healthLength: parsed.healthResult?.length,
+        strollerLength: parsed.strollerResult?.length,
         hasShopping: !!parsed.shoppingResult,
         hasHealth: !!parsed.healthResult,
+        hasStroller: !!parsed.strollerResult,
       });
       setData(parsed);
       if (parsed.mode === "health") setActiveTab("health");
@@ -64,6 +67,7 @@ export default function ResultsPage() {
   }
 
   const showBoth = data.mode === "both";
+  const hasMultipleTabs = showBoth || !!data.strollerResult;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white">
@@ -101,47 +105,68 @@ export default function ResultsPage() {
           </p>
         </div>
 
-        {/* Tabs (only if both) */}
-        {showBoth && (
-          <div className="flex gap-2 mb-8 bg-gray-100 p-1 rounded-2xl max-w-sm mx-auto">
-            <button
-              onClick={() => setActiveTab("shopping")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                activeTab === "shopping"
-                  ? "bg-white text-rose-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <ShoppingCart className="w-4 h-4" /> {t("results.tabShopping")}
-            </button>
-            <button
-              onClick={() => setActiveTab("health")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                activeTab === "health"
-                  ? "bg-white text-purple-600 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <Heart className="w-4 h-4" /> {t("results.tabHealth")}
-            </button>
+        {/* Tabs (if multiple guides) */}
+        {hasMultipleTabs && (
+          <div className="flex gap-2 mb-8 bg-gray-100 p-1 rounded-2xl flex-wrap justify-center">
+            {(data.shoppingResult || data.strollerResult) && (
+              <button
+                onClick={() => setActiveTab("shopping")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === "shopping"
+                    ? "bg-white text-rose-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <ShoppingCart className="w-4 h-4" /> {t("results.tabShopping")}
+              </button>
+            )}
+            {data.healthResult && (
+              <button
+                onClick={() => setActiveTab("health")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === "health"
+                    ? "bg-white text-purple-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                <Heart className="w-4 h-4" /> {t("results.tabHealth")}
+              </button>
+            )}
+            {data.strollerResult && (
+              <button
+                onClick={() => setActiveTab("stroller")}
+                className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-all ${
+                  activeTab === "stroller"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                🚼 {t("results.tabStroller")}
+              </button>
+            )}
           </div>
         )}
 
         {/* Content */}
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-          {(data.mode === "shopping" || (showBoth && activeTab === "shopping")) &&
+          {(activeTab === "shopping" || (!hasMultipleTabs && data.shoppingResult)) &&
             data.shoppingResult && (
               <div className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-3 prose-li:text-gray-600 prose-p:text-gray-600">
                 <ReactMarkdown>{data.shoppingResult}</ReactMarkdown>
               </div>
             )}
 
-          {(data.mode === "health" || (showBoth && activeTab === "health")) &&
-            data.healthResult && (
-              <div className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-3 prose-li:text-gray-600 prose-p:text-gray-600">
-                <ReactMarkdown>{data.healthResult}</ReactMarkdown>
-              </div>
-            )}
+          {activeTab === "health" && data.healthResult && (
+            <div className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-3 prose-li:text-gray-600 prose-p:text-gray-600">
+              <ReactMarkdown>{data.healthResult}</ReactMarkdown>
+            </div>
+          )}
+
+          {activeTab === "stroller" && data.strollerResult && (
+            <div className="prose prose-gray max-w-none prose-headings:text-gray-900 prose-h2:text-xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-3 prose-li:text-gray-600 prose-p:text-gray-600">
+              <ReactMarkdown>{data.strollerResult}</ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {/* Disclaimer */}

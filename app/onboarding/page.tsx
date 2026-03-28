@@ -26,7 +26,14 @@ type HealthInputs = {
   medicalHistory: string;
 };
 
-const STEPS = ["mode", "shopping", "health", "review"];
+type StrollerInputs = {
+  livingSituation: string;
+  storageConstraints: string;
+  physicalConsiderations: string;
+  primaryUse: string;
+};
+
+const STEPS = ["mode", "shopping", "health", "stroller", "review"];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -50,14 +57,21 @@ export default function OnboardingPage() {
     symptoms: "",
     medicalHistory: "",
   });
+  const [stroller, setStroller] = useState<StrollerInputs>({
+    livingSituation: "",
+    storageConstraints: "",
+    physicalConsiderations: "",
+    primaryUse: "",
+  });
+  const [includeStroller, setIncludeStroller] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const activeSteps =
     mode === "shopping"
-      ? ["mode", "shopping", "review"]
+      ? ["mode", "shopping", ...(includeStroller ? ["stroller"] : []), "review"]
       : mode === "health"
       ? ["mode", "health", "review"]
-      : STEPS;
+      : ["mode", "shopping", ...(includeStroller ? ["stroller"] : []), "health", "review"];
 
   const currentKey = activeSteps[step];
 
@@ -68,6 +82,7 @@ export default function OnboardingPage() {
       language,
       shopping: mode !== "health" ? shopping : null,
       health: mode !== "shopping" ? health : null,
+      stroller: includeStroller ? stroller : null,
     };
     const res = await fetch("/api/personalize", {
       method: "POST",
@@ -175,6 +190,21 @@ export default function OnboardingPage() {
                   </button>
                 ))}
               </div>
+              {mode === "shopping" || mode === "both" ? (
+                <div className="mt-8 p-4 border-2 border-blue-200 bg-blue-50 rounded-xl">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includeStroller}
+                      onChange={(e) => setIncludeStroller(e.target.checked)}
+                      className="w-5 h-5 rounded"
+                    />
+                    <span className="text-sm font-medium text-gray-900">
+                      Add personalized stroller guide (optional) 🚼
+                    </span>
+                  </label>
+                </div>
+              ) : null}
             </div>
           )}
 
@@ -427,6 +457,115 @@ export default function OnboardingPage() {
                     rows={3}
                     className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 resize-none"
                   />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP: stroller */}
+          {currentKey === "stroller" && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t("onboarding.strollerTitle")}
+              </h2>
+              <p className="text-gray-500 mb-8">Help us find the perfect stroller for your lifestyle.</p>
+              <div className="space-y-5">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t("onboarding.strollerLivingLabel")}
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      { value: "urban_transit", label: t("onboarding.strollerUrbanTransit"), emoji: "🚇" },
+                      { value: "urban_car", label: t("onboarding.strollerUrbanCar"), emoji: "🚗" },
+                      { value: "suburban", label: t("onboarding.strollerSuburban"), emoji: "🏘️" },
+                      { value: "rural", label: t("onboarding.strollerRural"), emoji: "🌳" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setStroller({ ...stroller, livingSituation: option.value })}
+                        className={`w-full p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
+                          stroller.livingSituation === option.value
+                            ? "border-blue-400 bg-blue-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-blue-200"
+                        }`}
+                      >
+                        <span className="text-lg">{option.emoji}</span>
+                        <span>{option.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t("onboarding.strollerStorageLabel")}
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      { value: "no_car", label: t("onboarding.strollerNocar"), emoji: "🚶" },
+                      { value: "small_trunk", label: t("onboarding.strollerSmallTrunk"), emoji: "🚙" },
+                      { value: "large_suv", label: t("onboarding.strollerLargeSuv"), emoji: "🚐" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setStroller({ ...stroller, storageConstraints: option.value })}
+                        className={`w-full p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
+                          stroller.storageConstraints === option.value
+                            ? "border-blue-400 bg-blue-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-blue-200"
+                        }`}
+                      >
+                        <span className="text-lg">{option.emoji}</span>
+                        <span>{option.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t("onboarding.strollerPhysicalLabel")}
+                  </label>
+                  <select
+                    value={stroller.physicalConsiderations}
+                    onChange={(e) => setStroller({ ...stroller, physicalConsiderations: e.target.value })}
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  >
+                    <option value="">Select any that apply</option>
+                    <option value="none">{t("onboarding.strollerPhysicalNone")}</option>
+                    <option value="back_issues">{t("onboarding.strollerBackIssues")}</option>
+                    <option value="joint_issues">{t("onboarding.strollerJointIssues")}</option>
+                    <option value="short_stature">{t("onboarding.strollerShortStature")}</option>
+                    <option value="multiple">{t("onboarding.strollerMultiple")}</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    {t("onboarding.strollerPrimaryUseLabel")}
+                  </label>
+                  <div className="space-y-2">
+                    {[
+                      { value: "daily_walks", label: t("onboarding.strollerDailyWalks"), emoji: "🚶" },
+                      { value: "occasional_travel", label: t("onboarding.strollerOccasionalTravel"), emoji: "✈️" },
+                      { value: "jogging", label: t("onboarding.strollerJogging"), emoji: "🏃" },
+                      { value: "mixed", label: t("onboarding.strollerMixed"), emoji: "🔄" },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setStroller({ ...stroller, primaryUse: option.value })}
+                        className={`w-full p-3 rounded-xl border-2 transition-all text-left flex items-center gap-2 ${
+                          stroller.primaryUse === option.value
+                            ? "border-blue-400 bg-blue-50 text-gray-900 font-medium"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-blue-200"
+                        }`}
+                      >
+                        <span className="text-lg">{option.emoji}</span>
+                        <span>{option.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
